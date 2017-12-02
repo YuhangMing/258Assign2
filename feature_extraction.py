@@ -5,6 +5,7 @@ import random
 import nltk
 from collections import defaultdict
 import pickle
+from nltk.corpus import stopwords
 
 
 # def loadJson(f):
@@ -65,13 +66,14 @@ if __name__ == "__main__":
         wordCountTmp = defaultdict(int)
         for w in l['description'].split():
             w = ''.join([c for c in w.lower() if not c in punct])
-            w = stemmer.stem(w)
-            if w not in word_all:
-                word_all.append(w)
-            wordCount[w] += 1
-            wordCountTmp[w] += 1
-            if w not in docCount.keys():
-                docCount[w] += 1
+            if w not in stopwords.words('english'):
+                w = stemmer.stem(w)
+                if w not in word_all:
+                    word_all.append(w)
+                wordCount[w] += 1
+                wordCountTmp[w] += 1
+                if w not in docCount.keys():
+                    docCount[w] += 1
         tf.append(wordCountTmp)
 
         # wordCountTmp = defaultdict(int)
@@ -109,9 +111,10 @@ if __name__ == "__main__":
         tmpDescrip = np.zeros(shape=(len(word_all)))
         for w in l['description'].split():
             w = ''.join([c for c in w.lower() if not c in punct])
-            w = stemmer.stem(w)
-            wordIdx = word_all.index(w)
-            tmpDescrip[wordIdx] = tf[idx][w] * np.log(120000/docCount[w])
+            if w not in stopwords.words('english'):
+                w = stemmer.stem(w)
+                wordIdx = word_all.index(w)
+                tmpDescrip[wordIdx] = tf[idx][w] * np.log(120000/docCount[w])
         feat_descrip.append(tmpDescrip)
         # tmpDesig = np.zeros(shape=(len(desig_word_all)))
         # for w in l['designation'].split():
@@ -144,6 +147,73 @@ if __name__ == "__main__":
     # pickle.dump(feat_winery, feat_winery_file)
 
     
-    
+    # testing
+    variety_all = []
+    winery_all = []
+    regions1_all = []
+    word_all = []
+    wordCount = defaultdict(int) # # of appearance of w in all documents
+    docCount = defaultdict(int) # # of docs of all docs that contains word w
+    tf = []
+
+    print 'Creating features...'
+    # desig_word_all = []
+    # desigWordCount = defaultdict(int)
+    # desigDocCount = defaultdict(int)
+    # desigTf = []
+    for l in test:
+        if l['variety'] not in variety_all:
+            variety_all.append(l['variety'])
+        if l['winery'] not in winery_all:
+            winery_all.append(l['winery'])
+        if l['region_1'] not in regions1_all:
+            regions1_all.append(l['region_1'])
+
+        wordCountTmp = defaultdict(int)
+        for w in l['description'].split():
+            w = ''.join([c for c in w.lower() if not c in punct])
+            if w not in stopwords.words('english'):
+                w = stemmer.stem(w)
+                if w not in word_all:
+                    word_all.append(w)
+                wordCount[w] += 1
+                wordCountTmp[w] += 1
+                if w not in docCount.keys():
+                    docCount[w] += 1
+        tf.append(wordCountTmp)
+
+    print('number of words in training' + str(len(word_all)))
+
+    # Create features
+    feat_descrip_test = []
+    # feat_desig = []
+    feat_points_test = []
+    feat_price_test = []
+    feat_variety_test = []
+    feat_winery_test = []
+    idx = 0
+    for l in test:
+        tmpDescrip = np.zeros(shape=(len(word_all)))
+        for w in l['description'].split():
+            w = ''.join([c for c in w.lower() if not c in punct])
+            if w not in stopwords.words('english'):
+                w = stemmer.stem(w)
+                wordIdx = word_all.index(w)
+                tmpDescrip[wordIdx] = tf[idx][w] * np.log(9971/docCount[w])
+        feat_descrip_test.append(tmpDescrip)
+        # tmpDesig = np.zeros(shape=(len(desig_word_all)))
+        # for w in l['designation']:
+        #     w = ''.join([c for c in w.lower() if not c in punct])
+        #     w = stemmer.stem(w)
+        #     wordIdx = desig_word_all.index(w)
+        #     tmpDesig[wordIdx] = tf[idx][w] * np.log(9971/docCOunt[w])
+        # feat_desig.append(tmpDesig)
+        feat_points_test.append(l['points'])
+        feat_price_test.append(l['price'])
+        tmpVariety = np.zeros(shape=(len(variety_all)))
+        feat_variety_test.append(tmpVariety[variety_all.index(l['variety'])])
+        tmpWinery = np.zeros(shape=(len(winery_all)))
+        feat_winery_test.append(tmpWinery[winery_all.index(l['winery'])])
+        idx += 1    
 
 
