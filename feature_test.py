@@ -49,6 +49,7 @@ if __name__ == "__main__":
     docCount = defaultdict(int) # # of docs of all docs that contains word w
     tf = []
 
+    print 'Creating features...'
     # desig_word_all = []
     # desigWordCount = defaultdict(int)
     # desigDocCount = defaultdict(int)
@@ -105,7 +106,7 @@ if __name__ == "__main__":
             w = ''.join([c for c in w.lower() if not c in punct])
             w = stemmer.stem(w)
             wordIdx = word_all.index(w)
-            tmpDescrip[wordIdx] = tf[idx][w] * np.log(9971/docCOunt[w])
+            tmpDescrip[wordIdx] = tf[idx][w] * np.log(9971/docCount[w])
         feat_descrip.append(tmpDescrip)
         # tmpDesig = np.zeros(shape=(len(desig_word_all)))
         # for w in l['designation']:
@@ -122,19 +123,21 @@ if __name__ == "__main__":
         feat_winery.append(tmpWinery[winery_all.index(l['winery'])])
         idx += 1
 
-    # write to txt files
-    feat_descrip_file = open('test_feat_descrip.txt', 'w')
-    pickle.dump(feat_descrip, feat_descrip_file)
-    # feat_desig_file = open('feat_desig.txt', 'w')
-    # pickle.dump(feat_desig, feat_desig_file)
-    feat_points_file = open('test_feat_points.txt', 'w')
-    pickle.dump(feat_points, feat_points_file)
-    feat_price_file = open('test_feat_price.txt', 'w')
-    pickle.dump(feat_price, feat_price_file)
-    feat_variety_file = open('test_feat_variety.txt', 'w')
-    pickle.dump(feat_variety, feat_variety_file)
-    feat_winery_file = open('test_feat_winery.txt', 'w')
-    pickle.dump(feat_winery, feat_winery_file)
+    # print(feat_descrip[0])
+    # print 'Writing to files...'
+    # # write to txt files
+    # feat_descrip_file = open('test_feat_descrip.pickle', 'wb')
+    # pickle.dump(feat_descrip, feat_descrip_file)
+    # # feat_desig_file = open('feat_desig.txt', 'w')
+    # # pickle.dump(feat_desig, feat_desig_file)
+    # feat_points_file = open('test_feat_points.pickle', 'wb')
+    # pickle.dump(feat_points, feat_points_file)
+    # feat_price_file = open('test_feat_price.pickle', 'wb')
+    # pickle.dump(feat_price, feat_price_file)
+    # feat_variety_file = open('test_feat_variety.pickle', 'wb')
+    # pickle.dump(feat_variety, feat_variety_file)
+    # feat_winery_file = open('test_feat_winery.pickle', 'wb')
+    # pickle.dump(feat_winery, feat_winery_file)
 
     
     
